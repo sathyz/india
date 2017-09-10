@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <script src="http://d3js.org/d3.v3.min.js"></script>
+        <script src="http://d3js.org/topojson.v1.min.js"></script>
+    </head>
+    <body>
+        <div id="map"></div>
+        <script type="application/javascript">
+            var width = 800,
+                height = 600;
+            
+            var svg = d3.select("#map").append("svg")
+                        .attr("width", width)
+                        .attr("height", height);
+            
+            
+            d3.json("india.json", function(error, topology) {
+                if (error) throw error;
+                
+                console.log(topology)
+                var states = topojson.feature(topology, topology.objects.states);
+                
+                var projection = d3.geo.albers()
+                                        .center([-63, -200])
+                                        .rotate([-150, 0])
+                                        .parallels([198, 160.2])
+                                        .scale(900)
+                                        .translate([width/2, height/2]);
+                
+                var path = d3.geo.path().projection(projection);
+                
+                svg.append("path")
+                    .datum(states)
+                    .style("fill", "none")
+                    .style("stroke", "black")
+                    .attr("d", path);
+            });
+        </script>
+    </body>
+</html>
