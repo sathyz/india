@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <script src="//d3js.org/d3.v3.min.js"></script>
+        <script src="//d3js.org/topojson.v1.min.js"></script>
+        <style>
+            .state {
+                fill: green;
+                stroke: white;
+                stroke-linejoin: round;
+            }
+
+            div.tooltip{
+                position: absolute;
+                background-color : lightsteelblue;
+                pointer-events: none;
+            }
+        
+        </style>
+    </head>
+    <body>
+        <div id="map"></div>
+        <script type="application/javascript">
+            var width = 800,
+                height = 600;
+            
+            var svg = d3.select("#map").append("svg")
+                        .attr("width", width)
+                        .attr("height", height);
+            
+            var tooltip = d3.select("body")
+                                .append("div")
+                                .attr("class", "tooltip")
+                                .style("opacity", 0);
+            
+            d3.json("india.json", function(error, topology) {
+                if (error) throw error;
+                
+                var states = topojson.feature(topology, topology.objects.states);
+                
+                var projection = d3.geo.albers()
+                                        .center([-63, -200])
+                                        .rotate([-150, 0])
+                                        .parallels([198, 160.2])
+                                        .scale(900)
+                                        .translate([width/2, height/2]);
+                
+                var path = d3.geo.path().projection(projection);
+                
+                // Draw state boundaries
+                svg.selectAll(".state")
+                    .data(states.features)
+                    .enter()
+                    .append("path")
+                    .attr("class", "state")
+                    .attr("d", path)
+                    .on("mouseover", function(d){
+                        var x = (d3.event.pageX) + "px",
+                            y = (d3.event.pageY - 28) + "px";
+                    
+                        //console.log("( " + x + ", " + y + " )");
+                        
+                        tooltip.transition()
+                                .duration(200)
+                                .style("opacity", .9);
+                        
+                        tooltip.html(d.properties.id)
+                                .style("left", x)
+                                .style("top", y);
+                })
+                    .on("mouseout", function(d){
+                        tooltip.transition()
+                                .duration(500)
+                                .style("opacity", 0);
+                });
+                
+            });
+        </script>
+    </body>
+</html>
