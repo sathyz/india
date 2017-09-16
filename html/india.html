@@ -3,6 +3,12 @@
     <head>
         <script src="//d3js.org/d3.v3.min.js"></script>
         <script src="//d3js.org/topojson.v1.min.js"></script>
+        <style>
+            .state {
+                fill: brown;
+                stroke: white;
+            }
+        </style>
     </head>
     <body>
         <div id="map"></div>
@@ -18,7 +24,6 @@
             d3.json("india.json", function(error, topology) {
                 if (error) throw error;
                 
-                console.log(topology)
                 var states = topojson.feature(topology, topology.objects.states);
                 
                 var projection = d3.geo.albers()
@@ -30,10 +35,11 @@
                 
                 var path = d3.geo.path().projection(projection);
                 
-                svg.append("path")
-                    .datum(states)
-                    .style("fill", "none")
-                    .style("stroke", "black")
+                svg.selectAll("path")
+                    .data(states.features)
+                    .enter()
+                    .append("path")
+                    .attr("class", "state")
                     .attr("d", path);
             });
         </script>
