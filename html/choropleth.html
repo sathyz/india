@@ -18,6 +18,15 @@
             body {
                 /*background: lightsteelblue;*/
             }
+            
+            .axis path,
+            .axis line {
+                fill: none;
+                stroke: black;
+                shape-rendering: crispEdges;
+            }
+            
+            
         </style>
         <title>India - MLA Salaries</title>
     </head>
@@ -73,7 +82,35 @@
                     .attr("class", "state")
                     .style("fill", function(d){return color(salaries[d.properties.id]);})
                     .attr("d", path);
+                
+                
+                // Add Legend Now
+                var x = d3.scale.linear()
+                            .domain( [0, maxSalary])
+                            .rangeRound([600, 750]);
+
+                var g = svg.append("g")
+                            .attr("id", "legend");
+                
+                g.selectAll("rect")
+                    .data( d3.range(0, maxSalary, 0.5))
+                    .enter()
+                    .append("rect")
+                    .attr("height", 8)
+                    .attr("x", function(d) { return x(d);} )
+                    .style("fill", function(d){ return color(d + 0.25); })
+                    .attr("width", x(0.5) - x(0) );
+
+                var legendAxis = d3.svg.axis()
+                                    .scale(x)
+                                    .orient("bottom")
+                                    .ticks(4);
+                g.append("g")
+                    .attr("class", "axis")
+                    .call(legendAxis);
+
             }
+            
         </script>
     </body>
 </html>
