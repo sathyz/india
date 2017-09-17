@@ -1,7 +1,9 @@
 .state {
     /*fill: brown;*/
-    stroke: none;
+    stroke: gray;
     stroke-linejoin: round;
+    stroke-width: 0.5;
+    
 }
 
 svg {
