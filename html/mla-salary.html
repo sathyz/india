@@ -4,30 +4,7 @@
         <script src="//d3js.org/d3.v3.min.js"></script>
         <script src="//d3js.org/queue.v1.min.js"></script>
         <script src="//d3js.org/topojson.v1.min.js"></script>
-        <style>
-            .state {
-                /*fill: brown;*/
-                stroke: none;
-                stroke-linejoin: round;
-            }
-            
-            svg {
-                background: lightsteelblue;
-            }
-            
-            body {
-                /*background: lightsteelblue;*/
-            }
-            
-            .axis path,
-            .axis line {
-                fill: none;
-                stroke: black;
-                shape-rendering: crispEdges;
-            }
-            
-            
-        </style>
+        <link rel="stylesheet" href="../style/custom.css" />
         <title>India - MLA Salaries</title>
     </head>
     <body>
@@ -41,6 +18,10 @@
                         .attr("width", width)
                         .attr("height", height);
             
+            var tooltip = d3.select("body")
+                        .append("div")
+                        .attr("class", "tooltip")
+                        .style("opacity", 0);
             
             queue()
                 .defer(d3.csv, "../data/mla-salaries.csv")
@@ -81,8 +62,24 @@
                     .attr("id", function(d){return d.properties.id;})
                     .attr("class", "state")
                     .style("fill", function(d){return color(salaries[d.properties.id]);})
-                    .attr("d", path);
-                
+                    .attr("d", path)
+                    .on("mouseover", function(d) {
+                        var x = (d3.event.pageX) + "px",
+                            y = (d3.event.pageY - 28) + "px";
+                    
+                        tooltip.transition()
+                                .duration(200)
+                                .style("opacity", .7);
+                        
+                        tooltip.html(d.properties.id + " " + salaries[d.properties.id] + "L")
+                                .style("left", x)
+                                .style("top", y);                        
+                })
+                    .on("mouseout", function(d) {
+                        tooltip.transition()
+                                .duration(500)
+                                .style("opacity", 0);                    
+                });
                 
                 // Add Legend Now
                 var x = d3.scale.linear()
@@ -107,8 +104,8 @@
                                     .ticks(4);
                 g.append("g")
                     .attr("class", "axis")
-                    .call(legendAxis);
-
+                    .call(legendAxis);                
+                
             }
             
         </script>
